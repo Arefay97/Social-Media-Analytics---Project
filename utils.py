@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
 from py2neo import Graph, Node, Relationship,DatabaseError
+import time
 
 
 
@@ -71,7 +72,8 @@ def Load_to_neo4j(URI, userName, passWord, G):
 
     # Iterate over nodes in the NetworkX graph
     for node_id, node_attrs in G.nodes(data=True):
-        
+        '''Function Description'''
+
         # Features extractio
         facebook_id = node_attrs.get('facebook_id', None)
         #page name causes a proplem with specific page name so I commented it till I fix it
@@ -88,3 +90,8 @@ def Load_to_neo4j(URI, userName, passWord, G):
             n.page_type = '{page_type}'
         """
         graph.run(query)
+
+def Similarity_between_nodes(G):
+    '''Function description'''
+
+    
