@@ -22,9 +22,20 @@ def Remove_selfloops(edges):
 
     return edges
 
-#def Remove_reciprocal_edges():
-    '''Funcrion Description'''
-
+'''def Remove_reciprocal_edges():
+    Funcrion Description
+    #list of indices of rows that should be droped
+    index_to_drop = []
+    # Iterate over each pair of rows
+    for i, row1 in edges.iterrows():
+        for j in range(i + 1, len(edges)):
+            row2 = edges.iloc[j]
+            #check if the edge is duplicated 
+            #print("there")
+            if (row1['source'], row1['target']) == (row2['target'], row2['source']):
+                print("here")
+                #drop one of the rows (the second row), add it to the list
+                index_to_drop.append(j)'''
 
 
 

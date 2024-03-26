@@ -25,17 +25,39 @@ def Calculate_degree_centrality(G, nodes):
     #Add the centrality values to nodes dataframe
     nodes['degree_centerality'] = nodes['id'].map(degree_centrality)
 
-    Max_degree_centrality = max(degree_centrality.values())
+    #Max_degree_centrality = max(degree_centrality.values())
+
+    return G, nodes
 
 
 def Calculate_betweenness_centrality(G, nodes):
     '''Function Decription'''
 
+    #calculate betweenness for nodes
     betweenness_centrality = nx.betweenness_centrality(G) 
 
-
+    #add to the graph for each node its coresponding betweenness value
     for node_id, value in betweenness_centrality.items():
         if node_id in G.nodes:
             G.nodes[node_id]['betweenness_centerality'] = value
-
+    #add values to the nodes dataframe
     nodes['betweenness_centerality'] = nodes['id'].map(betweenness_centrality)
+
+    return G, nodes
+
+def Calculate_closeness_centrality(G,nodes):
+    '''Function Description'''
+
+    #calculate closeness centrality for nodes in the graph
+    closeness_centrality = nx.closeness_centrality(G)
+
+    #add to the graph for each node its coresponding closeness value
+    #nodes.to_csv("nodes with betweenness.csv")
+    for node_id, value in closeness_centrality.items():
+        if node_id in G.nodes:
+            G.nodes[node_id]['closeness_centrality'] = value
+
+    #add values to the nodes dataframe
+    nodes['closeness_centrality'] = nodes['id'].map(closeness_centrality)
+
+    return G,nodes
