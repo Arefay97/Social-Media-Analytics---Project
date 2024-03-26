@@ -22,9 +22,9 @@ def Load_data (nodesPath , edgesPath):
 
 
 
-def Create_Graph(G , nodes , edges):
+def Create_Graph(nodes , edges):
     '''Function Description'''
-
+    G = nx.Graph()
     # Adding nodes to the graph
     for _, row in nodes.iterrows():
         node_id = row['id'] 
@@ -39,7 +39,7 @@ def Create_Graph(G , nodes , edges):
         G.add_edge(source, target)
     
     #Return the constructed Networkx Graph
-        return G
+    return G
     
 def get_node_features(graph, node_number):
     '''Function Description'''
