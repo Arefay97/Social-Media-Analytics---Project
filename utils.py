@@ -90,6 +90,17 @@ def Load_to_neo4j(URI, userName, passWord, G):
             n.page_type = '{page_type}'
         """
         graph.run(query)
+        
+        #Add the edges of its neighbor
+        neighbors = list(G[node_id])
+        #print(neighbors)
+        for neighbor in neighbors:
+            edges_query = f"""
+            MATCH (n:Node {{id: '{node_id}'}}), (m:Node {{id: '{neighbor}'}})
+            MERGE (n)-[:LINKED]-> (m)
+            MERGE (n)<-[:LINKED]-(m)
+            """
+            graph.run(edges_query)
 
 def Similarity_between_nodes(G):
     '''Function description'''
