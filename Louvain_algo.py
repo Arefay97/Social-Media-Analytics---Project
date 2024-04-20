@@ -53,18 +53,16 @@ class Louvain_algo:
                 self.com_inv[closest_node]= com_index
                 self.com[com_index] = {v,closest_node}
 
-    def construct_community_graph(self,com,G):
+    def construct_community_graph(self,com,G,node_degrees):
         # Initialize empty graph
         community_graph = nx.Graph()
-        
-        # Calculate total degree for each node in the original graph
-        node_degrees = dict(G.degree())
-        
+        print("start calculating total degrees")
         # Add nodes for each community and calculate total degrees
         total_degrees = {}
         for community, members in com.items():
             community_graph.add_node(community, size=len(members))
             total_degrees[community] = sum(node_degrees[node] for node in members)
+        print("total degrees calculated")
         
         # Add edges between community nodes and calculate shared degrees
         for community1, members1 in com.items():
@@ -74,7 +72,7 @@ class Louvain_algo:
                     #print(shared_degree)
                     if shared_degree > 0:
                         community_graph.add_edge(community1, community2, shared_degree=shared_degree)
-            
+        print("done with shared degrees")    
         # Add total degree as node attribute
         nx.set_node_attributes(community_graph, total_degrees, 'total_degree')
         
@@ -145,7 +143,7 @@ class Louvain_algo:
         self.passage()
         print("There were", len(self.com), "communities detected.")
         print("creating hypergraph")
-        hypergraph = self.construct_community_graph(self.com,self.G)
+        hypergraph = self.construct_community_graph(self.com,self.G,self.degree)
         print("passage 2")
         h = self.second_passage(hypergraph)
         print("The number of communities was reduced to ",len(h))
