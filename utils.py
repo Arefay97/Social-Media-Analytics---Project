@@ -1,11 +1,11 @@
 #importing important liberaries
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt #error in abeer's vsc
 import networkx as nx
 from py2neo import Graph, Node, Relationship,DatabaseError
 import time
-
+import plotly.graph_objects as go
 
 
 
@@ -102,7 +102,26 @@ def Load_to_neo4j(URI, userName, passWord, G):
             """
             graph.run(edges_query)
 
-def Similarity_between_nodes(G):
-    '''Function description'''
+'''def Similarity_between_nodes(G):'''
 
-    
+def plot (result_df,column,title):
+
+    #extract data
+    data = result_df[column]
+
+    # Create histogram
+    fig = go.Figure(data=[go.Histogram(x=data, nbinsx=500)])
+
+    # Update layout
+    fig.update_layout(
+        title=title,
+        xaxis_title='Values',
+        yaxis_title='Frequency',
+        font=dict(
+            family='Arial',
+            size=12
+        )
+    )
+
+    # Show the plot
+    fig.show()
