@@ -26,18 +26,47 @@ class Louvain_algo:
             com_inv[node] = node
         return com,com_inv
     
-    def modularity_gain(self,node,neighbor):
+    def random_init(self,G):
+        com_inv = {}
+        com = {}
+        nodes = G.nodes        
+        length = len(nodes)
+        for node in nodes:
+            community_id = random.randint(0,length - 1)
+            com_inv[node]=community_id
+            if community_id in com.keys():
+                com[community_id].add(node)
+            else:
+                com[community_id] = {node}   
+        return com,com_inv 
+
+    def neighbor_based_init(self,G):
+        com_inv = {}
+        com = {}
+        for node in G.nodes:
+            # Select a random neighbor
+            selected_neighbor = random.choice(list(G.neighbors(node)))
+
+            # Check if the selected neighbor has been assigned to a community
+            if selected_neighbor in com_inv:
+                community_id = com_inv[selected_neighbor]
+                com[community_id].add(node)
+            else:
+                community_id = len(com)
+                com[community_id] = {node}
+
+            com_inv[node] = community_id
+
+        return com, com_inv
+
+    
+    def modularity_gain(self,node,com_index):
         di = self.degree(node)
         #dj = self.degree(neighbor)
-
-        com_index = self.com_inv[neighbor]
         members = self.com[com_index]
-        shared_degree = 0
-        dj = 0
-        for member in members:
-            dj+=self.degree(member)
-            if member in self.G.neighbors(node):
-                shared_degree +=2
+        dj = sum(self.degree(member) for member in members)
+        shared_degree = sum(2 for neighbor in self.G.neighbors(node) if neighbor in members)
+
         return 1/(2*self.m)*(shared_degree-self.res*di*dj/self.m)
     
     def passage(self):
@@ -63,7 +92,7 @@ class Louvain_algo:
                 neighbors_com = self.com_inv[neighbor]
                 if neighbors_com in visited_communities:
                     continue
-                gains[self.modularity_gain(v,neighbor)] = neighbors_com
+                gains[self.modularity_gain(v,neighbors_com)] = neighbors_com
                 visited_communities.add(neighbors_com)
             best_mod = max(gains.keys())
             closest_com = gains[best_mod]
@@ -248,7 +277,7 @@ class Louvain_algo:
         print("passage 1")
         start_time = time.time()
         self.com,self.com_inv = self.init_dict(self.G)
-        #print(self.com)
+        print(self.com)
         while self.change==True:
             self.change = False
             print("start iteration")
@@ -282,19 +311,24 @@ class Louvain_algo:
         time_step = time.time()
         hyper_com, hyper_com_inv = self.init_dict(hypergraph)
         self.change=True
-        mod=0
+        mod=0.1
         while self.change==True:
             self.change=False
             print("start iteration")
             self.second_passage(hypergraph,hyper_com,hyper_com_inv)
+            final_communities = self.combine_com(self.com,hyper_com)
+            #actual_modularity = nx.community.modularity(self.G,list(final_communities.values()))
+            #print("actual_modularity = ",actual_modularity)
             modularity = nx.community.modularity(hypergraph,list(hyper_com.values()))
-            print("modularity = ",modularity)
+            #print("modularity = ",modularity)
             if modularity<mod:
                 print("stopped")
                 break
+                #hyper_com, hyper_com_inv = self.neighbor_based_init(hypergraph)
+                
             mod = modularity
         print("The number of communities was reduced to ",len(hyper_com))
-        print("hyper_com",hyper_com)        
+        #print("hyper_com",hyper_com)        
         final_communities = self.combine_com(self.com,hyper_com)
         new_modularity = nx.community.modularity(self.G,list(final_communities.values()))
         print("new_modularity:",new_modularity)
@@ -321,16 +355,21 @@ class Louvain_algo:
 
         hyper_hyper_com,hyper_hyper_com_inv = self.init_dict(hypergraph)
         self.change=True
-        mod = 0
+        mod = 0.1
         while self.change==True:
             self.change = False
             print("start iteration")
             self.second_passage(hypergraph,hyper_hyper_com,hyper_hyper_com_inv)
             modularity = nx.community.modularity(hypergraph,list(hyper_hyper_com.values()))
             print("modularity = ",modularity)
+            final_hyper_communities = self.combine_com(hyper_com,hyper_hyper_com)
+            final_final_communities = self.combine_com(self.com,final_hyper_communities)
+            actual_modularity = nx.community.modularity(self.G,list(final_final_communities.values()))
+            print("actual_modularity = ",actual_modularity)
             if modularity<mod:
                 print("stopped")
                 break
+                #hyper_hyper_com,hyper_hyper_com_inv = self.neighbor_based_init(hypergraph)
             mod = modularity
         print("The number of communities was reduced to ",len(hyper_hyper_com))
         old_modularity = new_modularity
@@ -338,15 +377,18 @@ class Louvain_algo:
         final_final_communities = self.combine_com(self.com,final_hyper_communities)
         new_modularity = nx.community.modularity(self.G,list(final_final_communities.values()))
         print("new_modularity:",new_modularity)
-        if new_modularity<old_modularity:
-            print("the old one was better")
-            return final_communities
+        if new_modularity-old_modularity<0.01:
+            if new_modularity<old_modularity:
+                print("the old one was better")
+                return final_communities
+            else:
+                return final_final_communities
         
 
 
         print("passage 4")
         print("creating hypergraph")
-        hypergraph = self.generate_hyper(hyper_com,hypergraph,hypergraph.degree,hyper_com_inv)
+        hypergraph = self.generate_hyper(hyper_hyper_com,hypergraph,hypergraph.degree,hyper_hyper_com_inv)
         """Checking hypergraph
         nx.draw(hypergraph,with_labels=True)
         for node, attr in hypergraph.nodes(data=True):
