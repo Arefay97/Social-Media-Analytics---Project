@@ -69,6 +69,16 @@ class Louvain_algo:
 
         return 1/(2*self.m)*(shared_degree-self.res*di*dj/self.m)
     
+    
+    def modularity_gain2(self,node,com_index,mod_before):
+        #add node to test community
+        self.com[com_index].add(node)
+        new_mod = nx.community.modularity(self.G,list(self.com.values()))
+        self.com[com_index].remove(node)
+        return new_mod-mod_before
+
+
+    
     def passage(self):
         nodes = list(self.G.nodes())
         #random.seed(2)
@@ -76,6 +86,7 @@ class Louvain_algo:
         changes = 0
         for v in nodes:
             original = "original"
+            mod_before = nx.community.modularity(self.G,list(self.com.values()))
             #delete v from its community:
             com_index = self.com_inv[v]
             del self.com_inv[v]
@@ -84,6 +95,7 @@ class Louvain_algo:
             #Find the neighbor with highest modularity gain
             #print("com_inv",com_inv)
             gains = {}
+            gains2 = {}
             visited_communities = set()
             for neighbor in self.G[v]:
                 #Just in case the original graph has selfloops.
@@ -92,10 +104,19 @@ class Louvain_algo:
                 neighbors_com = self.com_inv[neighbor]
                 if neighbors_com in visited_communities:
                     continue
-                gains[self.modularity_gain(v,neighbors_com)] = neighbors_com
+                #gains[self.modularity_gain(v,neighbors_com)] = neighbors_com
+                gains2[self.modularity_gain2(v,neighbors_com,mod_before)] = neighbors_com 
                 visited_communities.add(neighbors_com)
-            best_mod = max(gains.keys())
-            closest_com = gains[best_mod]
+            """
+            if gains == gains2:
+                print("good job")
+            else:
+                print("problem on node",v)
+                print(gains)
+                print(gains2)
+            """
+            best_mod = max(gains2.keys())
+            closest_com = gains2[best_mod]
             if best_mod<1e-07:
                 com_index = original
                 self.com[com_index].add(v)
@@ -273,7 +294,11 @@ class Louvain_algo:
         return(new_com,new_com_inv)
     
 
-    def run(self,number_of_passages=2):
+    #def run(self):
+
+
+
+    def run(self):
         print("passage 1")
         start_time = time.time()
         self.com,self.com_inv = self.init_dict(self.G)
@@ -366,9 +391,9 @@ class Louvain_algo:
             final_final_communities = self.combine_com(self.com,final_hyper_communities)
             actual_modularity = nx.community.modularity(self.G,list(final_final_communities.values()))
             print("actual_modularity = ",actual_modularity)
-            if modularity<mod:
-                print("stopped")
-                break
+            #if modularity<mod:
+             #   print("stopped")
+              #  break
                 #hyper_hyper_com,hyper_hyper_com_inv = self.neighbor_based_init(hypergraph)
             mod = modularity
         print("The number of communities was reduced to ",len(hyper_hyper_com))
