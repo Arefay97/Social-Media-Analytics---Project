@@ -294,11 +294,12 @@ class Louvain_algo:
         return(new_com,new_com_inv)
     
 
-    #def run(self):
-
-
-
     def run(self):
+        pass
+
+
+
+    def run2(self):
         print("passage 1")
         start_time = time.time()
         self.com,self.com_inv = self.init_dict(self.G)
