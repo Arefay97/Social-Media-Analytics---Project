@@ -1,6 +1,6 @@
 import utils
 import networkx as nx
-
+import numpy as np
 
 def Explore_nodes_data(G):
     '''Function Description'''
@@ -98,3 +98,25 @@ def Graph_connectivity(graph):
         print("The graph has multiple connected components.")
     else:
         print("The graph is fully connected.")
+
+def Has_Connected_Component(graph):
+    L = nx.normalized_laplacian_matrix(graph)
+    e = np.linalg.eigvals(L.toarray())
+    for arr in e:
+        zero_els = np.count_nonzero(arr==0)
+    if zero_els == 0:
+        return False #graph doesn't have connected components, only one component
+    elif zero_els > 0 :
+        return True #yes graph has connected components
+    
+def has_diagonal_one(graph):
+    matrix = nx.adjacency_matrix(graph)
+    count = 0
+    n, _ = matrix.shape
+    for i in range(n):
+        if matrix[i, i] == 1:
+            count += 1
+    if count > 0:
+        return True #has self loops
+    else:
+        return False #graph doesn't have selfloops

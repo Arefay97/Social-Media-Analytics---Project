@@ -1,7 +1,7 @@
 #importing important liberaries
 import pandas as pd
 import numpy as np
-#import matplotlib.pyplot as plt #error in abeer's vsc
+import matplotlib.pyplot as plt
 import networkx as nx
 from py2neo import Graph, Node, Relationship,DatabaseError
 import time
