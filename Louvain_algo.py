@@ -126,7 +126,7 @@ class Louvain_algo:
                
                 if com_index!=original:
                     changes+=1
-            print("changes",changes)
+            #print("changes",changes)
             if changes>0:
                 self.change = True
             else:
@@ -222,19 +222,16 @@ class Louvain_algo:
 
                 if hyper_com_index!=original:
                     changes+=1
+            """
             current_modularity = nx.community.modularity(hyper_graph, list(hyper_com.values()))
             if iteration > 0:
                 modularity_change = current_modularity - previous_modularity
-                print("len",sum(1 for community in hyper_com.values() if len(community)>0))
-                print("mod change",modularity_change)
-                if modularity_change < 1e-07:
-                    
-                    print("Convergence reached. Stopping iterations.")
-                    break
+
             previous_modularity = current_modularity
 
             print("mod inside passage2",current_modularity)
-            print("changes",changes)
+            """
+            #print("changes",changes)
             iteration+=1
             if changes>0:
                 self.change = True
@@ -264,25 +261,21 @@ class Louvain_algo:
         return(new_com,new_com_inv)
     
     def recursive_passage(self,G,com,com_inv):
-        before_modularity = nx.community.modularity(G,list(com.values()))
-        print("before",before_modularity)
+        #before_modularity = nx.community.modularity(G,list(com.values()))
+        #print("before",before_modularity)
         hypergraph = self.generate_hyper(com,G,com_inv)
         hyper_com, hyper_com_inv = self.init_dict(hypergraph)
         hyper_com, hyper_com_inv = self.second_passage(hypergraph,hyper_com,hyper_com_inv)
         final = self.combine_com(com,hyper_com)
         after_modularity = nx.community.modularity(G,list(final.values()))
-        print("after",after_modularity)
+        #print("after",after_modularity)
         hyper_modularity = nx.community.modularity(hypergraph,list(hyper_com.values()))
-        print("mod",hyper_modularity)
-        print("the number of communities is",sum(1 for community in hyper_com.values() if len(community)>0))
-        if ((after_modularity -before_modularity)<= 1e-07 ) or hyper_modularity<1e-07:
-            #com or final?
-            print("what is better",len(com))
-            return com
+        #print("mod",hyper_modularity)
+        #print("the number of communities is",sum(1 for community in hyper_com.values() if len(community)>0))
+        if hyper_modularity<1e-07:# ((after_modularity -before_modularity)<= 1e-07 ):# or 
+            return final
         else:
             from_before = self.recursive_passage(hypergraph,hyper_com,hyper_com_inv)
-            print("from before",from_before)
-            print("lengths of com?",[len(c) for c in from_before.values()])
             final = self.combine_com(com,from_before)
             return final
 
