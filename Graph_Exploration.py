@@ -65,7 +65,7 @@ def Calculate_closeness_centrality(G,nodes):
     return G,nodes
 
 
-def get_cut_sizes(G):
+def get_cut_sizes(G,com_id):
 
     # Initializing an empty dictionary to store cut sizes for each community
     cut_sizes = {}
@@ -73,8 +73,8 @@ def get_cut_sizes(G):
     # Iterating over edges in the graph
     for u, v in G.edges():
         # Checking if the nodes belong to different communities
-        community_u = G.nodes[u].get('community_id')
-        community_v = G.nodes[v].get('community_id')
+        community_u = G.nodes[u].get(com_id)
+        community_v = G.nodes[v].get(com_id)
         
         if community_u is not None and community_v is not None and community_u != community_v:
             # Updating the cut size for each community
