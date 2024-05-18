@@ -12,9 +12,7 @@ import plotly.graph_objects as go
 ################################Utilities Function start here############################
 
 def Load_data (nodesPath , edgesPath):
-    '''this function takes the pathes of the nodes and edges dataframes,
-    load the nodes and edges data frames,
-    and returns the node and edges dataframes'''
+    '''Function Description'''
 
 
     nodes = pd.read_csv(nodesPath)
@@ -25,9 +23,7 @@ def Load_data (nodesPath , edgesPath):
 
 
 def Create_Graph(nodes , edges):
-    '''this function takes the nodes and edges dataframe,
-    create the graph,
-    return the graph'''
+    '''Function Description'''
     G = nx.Graph()
     # Adding nodes to the graph
     for _, row in nodes.iterrows():
@@ -46,8 +42,7 @@ def Create_Graph(nodes , edges):
     return G
     
 def get_node_features(graph, node_number):
-    '''this function takes networkx graph and node_id as an input,
-    gets the attributtes of the node if available'''
+    '''Function Description'''
 
     if node_number in graph.nodes():
         return graph.nodes[node_number]
@@ -55,7 +50,7 @@ def get_node_features(graph, node_number):
         return None
         
 def Load_to_neo4j(URI, userName, passWord, G):
-    '''this function takes the Neo4j account data and load the graph to Neo4j'''
+
     # Connect to the Neo4j database
     graph = Graph(URI, auth=(userName, passWord))
 
@@ -85,10 +80,6 @@ def Load_to_neo4j(URI, userName, passWord, G):
         #page_name = node_attrs.get('page_name', None)
         page_type = node_attrs.get('page_type', None)
         #degree_centrality = node_attrs.get('degree_centrality', None)
-        our_community_id = node_attrs.get('Louvain_id')
-        community_id = node_attrs.get('community_id')
-        leiden_id = node_attrs.get('Leiden_id')
-        
 
         '''Create if the nodes aren't created already in the Graph DB, or update 
         ,if the nodes are already in the graph, nodes in Neo4j with the extracted features.'''
@@ -97,9 +88,6 @@ def Load_to_neo4j(URI, userName, passWord, G):
         MERGE (n:Node {{id: '{node_id}'}})
         SET n.facebook_id = '{facebook_id}',
             n.page_type = '{page_type}'
-            n.our_community_id'{our_community_id},
-            n.community_id'{community_id},
-            n.leiden_id'{leiden_id}
         """
         graph.run(query)
         
@@ -117,8 +105,7 @@ def Load_to_neo4j(URI, userName, passWord, G):
 '''def Similarity_between_nodes(G):'''
 
 def plot (result_df,column,title):
-    '''this function takes dataframe, column name and title for the graph,
-    and plots the graph'''
+
     #extract data
     data = result_df[column]
 
