@@ -23,7 +23,7 @@ def Load_data (nodesPath , edgesPath):
 
 
 def Create_Graph(nodes , edges):
-    '''Function Description'''
+    '''function to create the networkx graph from nodes and edges files'''
     G = nx.Graph()
     # Adding nodes to the graph
     for _, row in nodes.iterrows():
@@ -42,7 +42,7 @@ def Create_Graph(nodes , edges):
     return G
     
 def get_node_features(graph, node_number):
-    '''Function Description'''
+    '''Function returns some of nodes features'''
 
     if node_number in graph.nodes():
         return graph.nodes[node_number]
@@ -50,6 +50,7 @@ def get_node_features(graph, node_number):
         return None
         
 def Load_to_neo4j(URI, userName, passWord, G):
+    "Function to load the networkx graph to neo4j"
 
     # Connect to the Neo4j database
     graph = Graph(URI, auth=(userName, passWord))
@@ -72,14 +73,15 @@ def Load_to_neo4j(URI, userName, passWord, G):
 
     # Iterate over nodes in the NetworkX graph
     for node_id, node_attrs in G.nodes(data=True):
-        '''Function Description'''
+        
 
         # Features extractio
         facebook_id = node_attrs.get('facebook_id', None)
-        #page name causes a proplem with specific page name so I commented it till I fix it
+        #page name causes a proplem with specific page name like chinese names
         #page_name = node_attrs.get('page_name', None)
         page_type = node_attrs.get('page_type', None)
         #degree_centrality = node_attrs.get('degree_centrality', None)
+        Louvain_id = node_attrs.get('Louvain_id', None)
 
         '''Create if the nodes aren't created already in the Graph DB, or update 
         ,if the nodes are already in the graph, nodes in Neo4j with the extracted features.'''
@@ -87,7 +89,9 @@ def Load_to_neo4j(URI, userName, passWord, G):
         query = f"""
         MERGE (n:Node {{id: '{node_id}'}})
         SET n.facebook_id = '{facebook_id}',
-            n.page_type = '{page_type}'
+            n.page_type = '{page_type}',
+            n.Louvain_id = '{Louvain_id}'
+
         """
         graph.run(query)
         
@@ -125,3 +129,11 @@ def plot (result_df,column,title):
 
     # Show the plot
     fig.show()
+
+#Adding the community id to the graphs as attributes
+def add_community_ids(G,node_lists,attribute):
+    for i, nodes in enumerate(node_lists):
+        for node in nodes:
+            # Here you can set any attribute
+            G.nodes[node][attribute] = i
+    return G
