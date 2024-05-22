@@ -177,3 +177,18 @@ def get_eigenvalues_differences(graph):
         print(f"Difference ",i,":", {diff}, "Indices: {index1} and {index2}")
         i+=1'''
     return top_100_differences
+
+
+def calculate_intra_density(G, community_nodes):
+    '''this function calculates the intra-density for each community'''
+    subgraph = G.subgraph(community_nodes)
+    num_edges_within = subgraph.number_of_edges()
+    num_nodes = len(community_nodes)
+    total_possible_edges = num_nodes * (num_nodes - 1) / 2
+    return num_edges_within / total_possible_edges if total_possible_edges > 0 else 0
+
+'''intra_densities = {}
+#print("starting to calculate the densities")
+for community, nodes in community_dict.items():
+    intra_densities[community] = calculate_intra_density(graph, nodes)
+#print(intra_densities)'''
