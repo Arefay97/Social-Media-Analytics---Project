@@ -1,9 +1,9 @@
-import utils
-import Graph_Exploration
+import Code.utils as utils
+import Code.Graph_Exploration as Graph_Exploration
 import importlib
 import networkx as nx
-import Louvain_algo
-import Data_Reduction
+import Code.Louvain_algo as Louvain_algo
+import Code.Data_Reduction as Data_Reduction
 import time as t
 #loading nodes and edges in dataframes
 nodes,edges = utils.Load_data("musae_facebook_target.csv","musae_facebook_edges.csv")
