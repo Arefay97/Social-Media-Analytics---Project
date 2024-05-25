@@ -1,4 +1,4 @@
-import Code.utils as utils
+import utils as utils
 
 def Remove_selfloops(edges):
     '''Function Descrition'''

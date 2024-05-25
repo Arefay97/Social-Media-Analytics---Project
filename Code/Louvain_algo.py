@@ -273,7 +273,7 @@ class Louvain_algo:
         #print("mod",hyper_modularity)
         #print("the number of communities is",sum(1 for community in hyper_com.values() if len(community)>0))
         if ((after_modularity -before_modularity)<= 1e-07 ):# or hyper_modularity<1e-07:# 
-            return final
+            return com
         else:
             from_before = self.recursive_passage(hypergraph,hyper_com,hyper_com_inv)
             final = self.combine_com(com,from_before)

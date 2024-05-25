@@ -1,9 +1,9 @@
-import Code.utils as utils
-import Code.Graph_Exploration as Graph_Exploration
+import utils as utils
+import Graph_Exploration as Graph_Exploration
 import importlib
 import networkx as nx
-import Code.Louvain_algo as Louvain_algo
-import Code.Data_Reduction as Data_Reduction
+import Louvain_algo as Louvain_algo
+import Data_Reduction as Data_Reduction
 import time as t
 #loading nodes and edges in dataframes
 nodes,edges = utils.Load_data("musae_facebook_target.csv","musae_facebook_edges.csv")
@@ -31,14 +31,23 @@ Communities = algorithm.run()
 graph = utils.add_community_ids(graph,list(Communities.values()),'Louvain_id')
 print("community id is added to the graph")
 #add graph to neo4j
+
+
+
+"""
+
 print("starting loading to neo4j, olease modify userName, passWord, and URI")
+
+
+
+
 userName = "neo4j"
-passWord = "sh8cEfqyGbWA6ZTaRUiK4R2GFPWKm0ZsK1XhtF-c4_4"
-URI = "neo4j+s://4ba3a78f.databases.neo4j.io"
+passWord = 
+URI = 
 start = t.time()
 
 utils.Load_to_neo4j(URI, userName, passWord, graph)
 print("Graph Loaded To Neo4j")
 total_time = t.time() - start
 print(f"it takes {total_time} to load the graph to neo4j")
-
+"""
