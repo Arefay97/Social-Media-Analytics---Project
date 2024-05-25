@@ -6,7 +6,7 @@ This project is built for the "social media analytics" course in our masters pro
 Analysing the network and getting communities in the data using our implementation for Louvain algourithm for detecting communities.
 
 
-## Branch Trials
+## Branch Master
     |__code.
     |   |__ Data_Redution.py
     |   |__ Graph_Exploration.py
